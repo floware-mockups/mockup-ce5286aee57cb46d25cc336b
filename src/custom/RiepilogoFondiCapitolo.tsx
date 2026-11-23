@@ -3,84 +3,59 @@ import { customTicker, customTimers } from "../customGuard.ts";
 const __mk = customTicker("RiepilogoFondiCapitolo");
 const { setTimeout, setInterval, clearTimeout, clearInterval } = customTimers("RiepilogoFondiCapitolo");
 import { useState } from "react";
-import { Button, Card, Dialog, TextInput, Select, useTable, usePrototype } from "../floware";
+import { Card, Button, Badge, Select, Dialog, TextInput, useTable } from "../floware";
 function numero(t) {__mk();
  const s = String(t).replaceAll("€", "").split(".").join("").replace(",", ".").trim();
- return s === "" ? NaN : Number(s);
+ return s === "" ? Number.NaN : Number(s);
 }
-function pagata(s) {__mk(); return ["pagata", "pagato", "saldata", "saldato"].includes(String(s).trim().toLowerCase()); }
 export default function RiepilogoFondiCapitolo(props) {__mk();
  const table = useTable(props.pageId);
- const { openDetail, notify } = usePrototype();
- const [filtro, setFiltro] = useState("Tutti i capitoli");
+ const [filtro, setFiltro] = useState("Tutti");
  const [modifica, setModifica] = useState(null);
  const [importo, setImporto] = useState("");
- const [analisi, setAnalisi] = useState(null);
- const [esercizio, setEsercizio] = useState(String(new Date().getFullYear()));
  if (!table) return null;
- if (["Capitolo", "Importo", "Stato", "Stanziamento capitolo"].some(c => (__mk(), table.column(c) < 0))) return <p>Servono Capitolo, Importo, Stato e Stanziamento capitolo.</p>;
+ if (["Capitolo", "Importo", "Stanziamento capitolo", "Stato"].some(c => (__mk(), table.column(c) < 0))) return <p>Servono le colonne Capitolo, Importo, Stanziamento capitolo e Stato.</p>;
  const euro = n => (__mk(), new Intl.NumberFormat("it-IT", {style:"currency", currency:"EUR"}).format(n));
- const nome = c => (__mk(), "Capitolo " + (c || "non indicato"));
+ const stati = [...new Set(table.rows.map(r => (__mk(), table.value(r,"Stato") || "Non indicato")))];
  const capitoli = [...new Set(table.rows.map(r => (__mk(), table.value(r,"Capitolo"))))];
- const opzioni = ["Tutti i capitoli", ...capitoli.map(nome)];
- const attivo = opzioni.includes(filtro) ? filtro : opzioni[0];
- const righe = table.rows.map((r,i) => (__mk(), i)).filter(i => (__mk(), attivo === opzioni[0] || nome(table.value(i,"Capitolo")) === attivo));
- const nuovo = numero(importo);
- const valido = Number.isFinite(nuovo) && nuovo >= 0;
- const indici = analisi === null ? [] : table.findRows("Capitolo",analisi);
- const saldate = indici.filter(i => (__mk(), pagata(table.value(i,"Stato"))));
- const valide = saldate.filter(i => (__mk(), Number.isFinite(numero(table.value(i,"Importo"))))) ;
- const totale = valide.reduce((s,i) => (__mk(), s + numero(table.value(i,"Importo"))),0);
- const annoPresente = table.column("Anno pagamento") >= 0;
- const annoDi = i => (__mk(), annoPresente ? Number(table.value(i,"Anno pagamento")) : NaN);
- const annoValido = i => (__mk(), Number.isInteger(annoDi(i)) && annoDi(i) >= 1900 && annoDi(i) <= 9999);
- const senzaAnno = saldate.filter(i => (__mk(), !annoValido(i))).length;
- const base = Number(esercizio);
- const baseValida = Number.isInteger(base) && base >= 1904 && base <= 9998;
- const anni = baseValida ? [base-4,base-3,base-2,base-1,base] : [];
- const annuali = anni.map(anno => {__mk();
-  const rr = saldate.filter(i => (__mk(), annoValido(i) && annoDi(i) === anno));
-  const vv = rr.filter(i => (__mk(), Number.isFinite(numero(table.value(i,"Importo")))));
-  return {anno, n:rr.length, valido:rr.length > 0 && vv.length === rr.length, somma:vv.reduce((s,i) => (__mk(), s + numero(table.value(i,"Importo"))),0)};
+ const gruppi = capitoli.map(c => {__mk();
+  const ii = table.findRows("Capitolo",c);
+  const fondi = ii.map(i => (__mk(), numero(table.value(i,"Stanziamento capitolo"))));
+  const validi = fondi.filter(n => (__mk(), Number.isFinite(n) && n >= 0));
+  const fondo = validi.length ? validi[0] : null;
+  const coerente = fondo !== null && fondi.every(n => (__mk(), n === fondo));
+  const valido = ii.every(i => {__mk();const n = numero(table.value(i,"Importo")); return Number.isFinite(n) && n >= 0;});
+  const segmenti = stati.map((s,k) => ((__mk(), {s,k,totale:ii.filter(i => (__mk(), (table.value(i,"Stato") || "Non indicato") === s)).reduce((a,i) => {__mk();const n = numero(table.value(i,"Importo")); return a + (Number.isFinite(n) && n >= 0 ? n : 0);},0)})));
+  const totale = segmenti.reduce((a,s) => (__mk(), a+s.totale),0);
+  return {c,ii,fondo,coerente,valido,segmenti,totale};
  });
- const previsione = annuali.length === 5 && annuali.every(a => (__mk(), a.valido)) && senzaAnno === 0;
+ const massimo = gruppi.reduce((a,g) => (__mk(), Math.max(a,g.fondo || 0,g.totale)),1);
+ const nome = c => (__mk(), "Capitolo " + (c || "non indicato"));
+ const opzioni = ["Tutti",...capitoli.map(nome)];
+ const attivo = opzioni.includes(filtro) ? filtro : "Tutti";
+ const nuovo = numero(importo);
  function salva() {__mk();
-  if (!valido || modifica === null) return;
+  if (modifica === null || !Number.isFinite(nuovo) || nuovo < 0) return;
   table.findRows("Capitolo",modifica).forEach(i => (__mk(), table.setCell(i,"Stanziamento capitolo",euro(nuovo))));
-  setModifica(null); notify("Stanziamento aggiornato per il capitolo.");
+  setModifica(null);
  }
  return <Card title="Fondi e fatture per capitolo"><div className="space-y-4">
- <Select label="Capitolo" value={attivo} options={opzioni} onChange={setFiltro}/>
- <p>Filtro limitato a questo riquadro. Dati dimostrativi in memoria.</p>
- {capitoli.filter(c => (__mk(), attivo === opzioni[0] || nome(c) === attivo)).map(c => {__mk();
- const ii = table.findRows("Capitolo",c);
- const fondi = ii.map(i => (__mk(), numero(table.value(i,"Stanziamento capitolo")))).filter(n => (__mk(), Number.isFinite(n)));
- const fondo = fondi.length ? fondi[0] : 0;
- const aperte = ii.filter(i => (__mk(), !pagata(table.value(i,"Stato"))));
- const mancanti = aperte.some(i => (__mk(), !Number.isFinite(numero(table.value(i,"Importo"))))) ;
- const dovuto = aperte.reduce((s,i) => (__mk(), s + (numero(table.value(i,"Importo")) || 0)),0);
- return <div key={c} className="border border-(--mk-border) rounded-lg p-4 space-y-2"><h3>{nome(c)}</h3>
- <p>Stanziamento: {fondi.length ? euro(fondo) : "mancante"} · Da pagare ({aperte.length}): {mancanti ? "dati incompleti" : euro(dovuto)} · Residuo: {fondi.length && !mancanti ? euro(fondo-dovuto) : "non calcolabile"}</p>
- {fondi.some(n => (__mk(), n !== fondo)) && <p>Stanziamenti discordanti: usato il primo valore.</p>}
- <Button variant="secondary" onClick={() => {__mk();setModifica(c);setImporto(fondo.toFixed(2).replace(".",","));}}>Modifica stanziamento</Button>
- <Button onClick={() => (__mk(), setAnalisi(c))}>Calcola riepilogo e previsione</Button></div>;
- })}
- <p>Residuo = stanziamento, contato una volta, meno fatture non pagate.</p>
- <h3>Pratiche filtrate ({righe.length})</h3>
- <div className="overflow-x-auto"><table className="w-full text-sm"><thead><tr>{table.columns.map(c => (__mk(), <th key={c}>{c}</th>))}<th>Dettaglio</th></tr></thead><tbody>{righe.map(i => (__mk(), <tr key={i}>{table.columns.map(c => (__mk(), <td key={c} className="p-2">{table.value(i,c)}</td>))}<td><Button variant="link" onClick={() => (__mk(), openDetail(props.pageId,i))}>Apri</Button></td></tr>))}</tbody></table></div>
+ <p className="text-sm text-(--mk-muted)">Grafico in stile Gantt su asse monetario, non temporale. Scala comune a tutti i capitoli. Stanziamento contato una sola volta; impegnato = somma di tutte le pratiche, incluse quelle pagate. Disponibile = stanziamento meno impegnato.</p>
+ <Select label="Capitolo del grafico" value={attivo} options={opzioni} onChange={setFiltro}/>
+ <p className="text-sm">Ogni segmento numerato corrisponde a uno stato; i valori sono riportati anche in testo.</p>
+ <div className="flex justify-between text-xs text-(--mk-muted)"><span>0 €</span><span>{euro(massimo/2)}</span><span>{euro(massimo)}</span></div>
+ {gruppi.filter(g => (__mk(), attivo === "Tutti" || nome(g.c) === attivo)).map(g => (__mk(), <div key={g.c} className="rounded-lg border border-(--mk-border) p-4 space-y-3">
+ <h3 className="font-semibold">{nome(g.c)}</h3>
+ <p className="text-sm">Stanziamento: {g.fondo === null ? "mancante" : euro(g.fondo)}</p>
+ <div className="h-5 bg-(--mk-subtle)" aria-label="Barra dello stanziamento"><div className="h-full border border-(--mk-border) bg-(--mk-primary)" style={{width:(g.fondo || 0)/massimo*100 + "%"}}/></div>
+ <p className="text-sm">Impegnato: {euro(g.totale)}{!g.valido && " (parziale)"}</p>
+ <div className="flex h-8 bg-(--mk-subtle)" aria-label="Impegni suddivisi per stato">{g.segmenti.filter(s => (__mk(), s.totale > 0)).map(s => (__mk(), <div key={s.s} title={s.s + ": " + euro(s.totale)} className="h-full overflow-hidden bg-(--mk-primary) text-(--mk-on-primary) text-center text-xs" style={{width:s.totale/massimo*100 + "%",borderWidth:"2px",borderColor:"var(--mk-surface)",borderStyle:s.k % 2 ? "dashed" : "solid"}}>{s.k+1}</div>))}</div>
+ <div className="flex flex-wrap gap-2">{g.segmenti.filter(s => (__mk(), s.totale > 0)).map(s => (__mk(), <span key={s.s} className="border border-(--mk-border) rounded p-2 text-sm">{s.k+1}. {s.s}: {euro(s.totale)}</span>))}</div>
+ {g.coerente && g.valido ? <Badge tone={g.fondo < g.totale ? "danger" : "primary"}>{g.fondo < g.totale ? "Sforamento: " + euro(g.totale-g.fondo) : "Disponibile: " + euro(g.fondo-g.totale)}</Badge> : <p className="text-sm text-(--mk-danger)">Residuo non calcolabile: importi non validi o stanziamenti mancanti o discordanti. Il grafico usa gli importi validi e il primo stanziamento valido.</p>}
+ <div><Button variant="secondary" onClick={() => {__mk();setModifica(g.c);setImporto((g.fondo || 0).toFixed(2).replace(".",","));}}>Modifica stanziamento</Button></div>
+ </div>))}
+ {!gruppi.length && <p>Nessuna pratica registrata.</p>}
  </div>
- {modifica !== null && <Dialog title={nome(modifica)} onClose={() => (__mk(), setModifica(null))} footer={<><Button variant="secondary" onClick={() => (__mk(), setModifica(null))}>Annulla</Button><Button disabled={!valido} onClick={salva}>Salva</Button></>}><p>Stanziamento applicato a tutte le fatture del capitolo.</p><TextInput label="Stanziamento in euro" value={importo} onChange={setImporto}/></Dialog>}
- {analisi !== null && <Dialog title={"Analisi: " + nome(analisi)} onClose={() => (__mk(), setAnalisi(null))} footer={<Button onClick={() => (__mk(), setAnalisi(null))}>Chiudi</Button>}><div className="space-y-3">
- <p>Pratiche: {indici.length}. Pagate: {saldate.length}. Non pagate: {indici.length-saldate.length}.</p>
- <p>Totale pagamenti con importo valido: {euro(totale)}. Media: {valide.length ? euro(totale/valide.length) : "non disponibile"} ({valide.length} valori). Importi esclusi: {saldate.length-valide.length}.</p>
- <p>Stati inclusi: Pagata, Pagato, Saldata, Saldato. Le pratiche aperte non sono uscite effettive.</p>
- {saldate.map(i => (__mk(), <p key={i}>Riga {i+1}: {table.column("Atto") >= 0 ? table.value(i,"Atto") : "atto non disponibile"} · {table.value(i,"Importo")} · Anno pagamento: {annoValido(i) ? annoDi(i) : "mancante"}</p>))}
- <TextInput label="Ultimo esercizio del quinquennio" type="number" value={esercizio} onChange={setEsercizio}/>
- <p>Si usa solo la colonna Anno pagamento: scadenza e anno dell’atto non provano quando è avvenuto il pagamento. Pagamenti senza anno valido: {senzaAnno}.</p>
- {!baseValida && <p>Indicare un anno intero tra 1904 e 9998.</p>}
- {annuali.map(a => (__mk(), <p key={a.anno}>{a.anno}: uscite {a.valido ? euro(a.somma) + " su " + a.n + " pagamenti registrati" : "non disponibili o incomplete"}; entrate: non disponibili.</p>))}
- <p>Mancano movimenti di entrata con anno e importo. Lo stanziamento non è un’entrata. I totali disponibili riguardano solo le righe registrate, non un rendiconto annuale completo.</p>
- <p>Previsione {baseValida ? base+1 : ""}: {previsione ? euro(annuali.reduce((s,a) => (__mk(), s+a.somma),0)/5) + ", media aritmetica delle cinque uscite annue elencate; stima sui soli dati registrati, senza inflazione." : "non calcolabile: servono uscite datate e importi validi per tutti e cinque gli anni; anni senza righe non sono considerati a spesa zero."}</p>
- </div></Dialog>}
+ {modifica !== null && <Dialog title={"Stanziamento: " + nome(modifica)} onClose={() => (__mk(), setModifica(null))} footer={<><Button variant="secondary" onClick={() => (__mk(), setModifica(null))}>Annulla</Button><Button disabled={!Number.isFinite(nuovo) || nuovo < 0} onClick={salva}>Salva</Button></>}><p>Il valore viene applicato a tutte le pratiche del capitolo, solo in memoria.</p><TextInput label="Stanziamento in euro" value={importo} onChange={setImporto}/></Dialog>}
  </Card>;
 }

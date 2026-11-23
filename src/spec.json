@@ -223,8 +223,8 @@
     },
     {
       "name": "RiepilogoFondiCapitolo",
-      "title": "Fondi e fatture per capitolo",
-      "description": "Fondi, pratiche e analisi dei pagamenti per capitolo, con evidenza dei dati mancanti.",
+      "title": "Fondi per capitolo: grafico Gantt",
+      "description": "Barre su scala comune per stanziamenti, impegni per stato e fondi disponibili.",
       "role": "section",
       "pageId": "registro-pagamenti",
       "position": "top"
