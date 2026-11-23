@@ -224,7 +224,7 @@
     {
       "name": "RiepilogoFondiCapitolo",
       "title": "Fondi e fatture per capitolo",
-      "description": "Selettore dei capitoli, pratiche filtrate e gestione degli stanziamenti in memoria.",
+      "description": "Fondi, pratiche e analisi dei pagamenti per capitolo, con evidenza dei dati mancanti.",
       "role": "section",
       "pageId": "registro-pagamenti",
       "position": "top"
