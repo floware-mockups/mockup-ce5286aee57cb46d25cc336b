@@ -1,0 +1,201 @@
+{
+  "title": "Gestione pagamenti e liquidazioni",
+  "description": "Registro delle pratiche di pagamento con scadenze chiare, controlli da fare e stato aggiornato. La dashboard mette in evidenza gli impegni e i pagamenti del mese.",
+  "accent": "indigo",
+  "pages": [
+    {
+      "id": "riepilogo",
+      "title": "Riepilogo",
+      "description": "Controlla gli importi del mese, le pratiche in scadenza e le verifiche ancora da fare.",
+      "metrics": [
+        {
+          "label": "Impegni del mese",
+          "value": "€ 18.450,00"
+        },
+        {
+          "label": "Fatture da liquidare",
+          "value": "4"
+        },
+        {
+          "label": "Importo pagato del mese",
+          "value": "€ 12.680,00"
+        },
+        {
+          "label": "Fatture in scadenza",
+          "value": "3"
+        }
+      ],
+      "columns": [
+        "Pratica",
+        "Fornitore",
+        "Importo",
+        "Scadenza",
+        "Stato"
+      ],
+      "rows": [
+        [
+          "Pagamento arredi",
+          "Lumo Arredi",
+          "€ 2.450,00",
+          "18/06/2026",
+          "Da controllare"
+        ],
+        [
+          "Manutenzione impianti",
+          "Vela Impianti",
+          "€ 3.800,00",
+          "20/06/2026",
+          "In liquidazione"
+        ],
+        [
+          "Materiale ufficio",
+          "Nubi Forniture",
+          "€ 640,00",
+          "24/06/2026",
+          "Da liquidare"
+        ],
+        [
+          "Servizio archivi",
+          "Ramo Archivi",
+          "€ 1.250,00",
+          "28/06/2026",
+          "Pagata"
+        ]
+      ],
+      "form": []
+    },
+    {
+      "id": "registro-pagamenti",
+      "title": "Registro pagamenti",
+      "description": "Cerca le pratiche, filtra per stato e aggiungi una nuova richiesta di pagamento. Controlla la scadenza entro 30 giorni dalla ricezione.",
+      "metrics": [],
+      "columns": [
+        "Atto",
+        "Tipo",
+        "Fornitore",
+        "Importo",
+        "Capitolo",
+        "Scadenza",
+        "Stato"
+      ],
+      "rows": [
+        [
+          "Det. 41/2026",
+          "Arredi",
+          "Lumo Arredi",
+          "€ 2.450,00",
+          "1032",
+          "18/06/2026",
+          "Da controllare"
+        ],
+        [
+          "Det. 44/2026",
+          "Manutenzione",
+          "Vela Impianti",
+          "€ 3.800,00",
+          "2041",
+          "20/06/2026",
+          "In liquidazione"
+        ],
+        [
+          "Det. 47/2026",
+          "Forniture",
+          "Nubi Forniture",
+          "€ 640,00",
+          "1032",
+          "24/06/2026",
+          "Da liquidare"
+        ],
+        [
+          "Det. 51/2026",
+          "Archiviazione",
+          "Ramo Archivi",
+          "€ 1.250,00",
+          "3050",
+          "28/06/2026",
+          "Pagata"
+        ],
+        [
+          "Det. 53/2026",
+          "Servizi",
+          "Timo Servizi",
+          "€ 920,00",
+          "2041",
+          "30/06/2026",
+          "Da controllare"
+        ]
+      ],
+      "form": [
+        "Atto",
+        "Tipo",
+        "Fornitore",
+        "Importo",
+        "Capitolo",
+        "Scadenza",
+        "Stato"
+      ]
+    },
+    {
+      "id": "controlli",
+      "title": "Controlli da fare",
+      "description": "Verifica le pratiche prima di preparare l'atto di liquidazione. Le scadenze più vicine sono mostrate per prime.",
+      "metrics": [
+        {
+          "label": "Da controllare",
+          "value": "2"
+        },
+        {
+          "label": "In scadenza entro 7 giorni",
+          "value": "3"
+        }
+      ],
+      "columns": [
+        "Atto",
+        "Fornitore",
+        "Importo",
+        "Scadenza",
+        "Controllo da fare",
+        "Stato"
+      ],
+      "rows": [
+        [
+          "Det. 41/2026",
+          "Lumo Arredi",
+          "€ 2.450,00",
+          "18/06/2026",
+          "Verificare importo e capitolo",
+          "Da controllare"
+        ],
+        [
+          "Det. 44/2026",
+          "Vela Impianti",
+          "€ 3.800,00",
+          "20/06/2026",
+          "Confermare la prestazione",
+          "In liquidazione"
+        ],
+        [
+          "Det. 47/2026",
+          "Nubi Forniture",
+          "€ 640,00",
+          "24/06/2026",
+          "Verificare i documenti di spesa",
+          "Da liquidare"
+        ],
+        [
+          "Det. 53/2026",
+          "Timo Servizi",
+          "€ 920,00",
+          "30/06/2026",
+          "Verificare importo e capitolo",
+          "Da controllare"
+        ]
+      ],
+      "form": []
+    }
+  ],
+  "theme": {
+    "palette": "ardesia",
+    "fonts": "istituzionale"
+  }
+}
