@@ -76,7 +76,8 @@
         "Importo",
         "Capitolo",
         "Scadenza",
-        "Stato"
+        "Stato",
+        "Stanziamento capitolo"
       ],
       "rows": [
         [
@@ -86,7 +87,8 @@
           "€ 2.450,00",
           "1032",
           "18/06/2026",
-          "Da controllare"
+          "Da controllare",
+          "€ 12.000,00"
         ],
         [
           "Det. 44/2026",
@@ -95,7 +97,8 @@
           "€ 3.800,00",
           "2041",
           "20/06/2026",
-          "In liquidazione"
+          "In liquidazione",
+          "€ 8.000,00"
         ],
         [
           "Det. 47/2026",
@@ -104,7 +107,8 @@
           "€ 640,00",
           "1032",
           "24/06/2026",
-          "Da liquidare"
+          "Da liquidare",
+          "€ 12.000,00"
         ],
         [
           "Det. 51/2026",
@@ -113,7 +117,8 @@
           "€ 1.250,00",
           "3050",
           "28/06/2026",
-          "Pagata"
+          "Pagata",
+          "€ 5.000,00"
         ],
         [
           "Det. 53/2026",
@@ -122,7 +127,8 @@
           "€ 920,00",
           "2041",
           "30/06/2026",
-          "Da controllare"
+          "Da controllare",
+          "€ 8.000,00"
         ]
       ],
       "form": [
@@ -197,5 +203,23 @@
   "theme": {
     "palette": "ardesia",
     "fonts": "istituzionale"
-  }
+  },
+  "custom": [
+    {
+      "name": "RiepilogoFondiCapitolo",
+      "title": "Fondi e fatture per capitolo",
+      "description": "Raggruppamento delle fatture, calcolo del residuo e modifica degli stanziamenti dimostrativi.",
+      "role": "section",
+      "pageId": "registro-pagamenti",
+      "position": "top"
+    },
+    {
+      "name": "PromemoriaLiquidazione",
+      "title": "Promemoria scadenza liquidazione",
+      "description": "Avviso dipendente dalla data corrente per le pratiche non pagate.",
+      "role": "cell",
+      "pageId": "registro-pagamenti",
+      "column": "Scadenza"
+    }
+  ]
 }
