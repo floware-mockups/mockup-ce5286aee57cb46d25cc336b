@@ -220,6 +220,14 @@
       "role": "cell",
       "pageId": "registro-pagamenti",
       "column": "Scadenza"
+    },
+    {
+      "name": "CreazioneAttoLiquidazione",
+      "title": "Creazione atto di liquidazione",
+      "description": "Azione dimostrativa nella colonna Atto, consentita soltanto con Stato Pagata.",
+      "role": "cell",
+      "pageId": "registro-pagamenti",
+      "column": "Atto"
     }
   ]
 }
