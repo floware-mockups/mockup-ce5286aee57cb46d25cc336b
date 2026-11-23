@@ -206,14 +206,6 @@
   },
   "custom": [
     {
-      "name": "RiepilogoFondiCapitolo",
-      "title": "Fondi e fatture per capitolo",
-      "description": "Raggruppamento delle fatture, calcolo del residuo e modifica degli stanziamenti dimostrativi.",
-      "role": "section",
-      "pageId": "registro-pagamenti",
-      "position": "top"
-    },
-    {
       "name": "PromemoriaLiquidazione",
       "title": "Promemoria scadenza liquidazione",
       "description": "Avviso dipendente dalla data corrente per le pratiche non pagate.",
@@ -228,6 +220,14 @@
       "role": "cell",
       "pageId": "registro-pagamenti",
       "column": "Atto"
+    },
+    {
+      "name": "RiepilogoFondiCapitolo",
+      "title": "Fondi e fatture per capitolo",
+      "description": "Selettore dei capitoli, pratiche filtrate e gestione degli stanziamenti in memoria.",
+      "role": "section",
+      "pageId": "registro-pagamenti",
+      "position": "top"
     }
   ]
 }
